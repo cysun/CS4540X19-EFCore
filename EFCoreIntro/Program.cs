@@ -9,23 +9,37 @@ namespace EFCoreIntro
         {
             using (var db = new AppDbContext())
             {
-                var employees = db.Employees.ToList();
-                foreach (var employee in employees)
-                    Console.WriteLine(employee);
+                // Load an object by primary key using Find()
+                var jane = db.Employees.Find(2);
+                Console.WriteLine(jane);
 
-                var query = from e in db.Employees where e.Id == 3 select e;
-                var tom = query.Single();
+                // Query objects using LINQ
+                var query1 = from e in db.Employees
+                             where e.LastName == "Smith"
+                             select e;
+                var tom = query1.FirstOrDefault();
                 Console.WriteLine(tom);
-                Console.WriteLine(tom.Supervisor);
+
+                // Lazy load referenced objects
                 Console.WriteLine(tom.Supervisor.Supervisor);
 
-                var jack = new Employee
+                // Update an object
+                tom.FirstName = "Tim";
+                db.SaveChanges();
+
+                // Delete an object
+                db.Employees.Remove(tom);
+                db.SaveChanges();
+
+                // Add a new object
+                tom = new Employee
                 {
-                    FirstName = "Jack",
-                    LastName = "Jones",
-                    Supervisor = tom
+                    FirstName = "Tom",
+                    LastName = "Smith",
+                    DateHired = new DateTime(2016, 6, 19),
+                    Supervisor = jane
                 };
-                db.Employees.Add(jack);
+                db.Employees.Add(tom);
                 db.SaveChanges();
             }
         }
