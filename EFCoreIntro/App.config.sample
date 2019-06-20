@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <connectionStrings>
+    <add name="Default" connectionString="Server=ecst-csproj2.calstatela.edu,6301;Database=cs4540stu31;User ID=cs4540stu31;Password=abcd"/>
+  </connectionStrings>
+</configuration>

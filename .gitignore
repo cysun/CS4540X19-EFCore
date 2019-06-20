@@ -341,3 +341,6 @@ healthchecksdb
 
 # EF Migrations
 Migrations/
+
+# App Config
+App.config

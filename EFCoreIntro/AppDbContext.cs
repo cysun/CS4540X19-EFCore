@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreIntro
 {
     class AppDbContext : DbContext
     {
-        private const string ConnectionString =
-            @"Server=ecst-csproj2.calstatela.edu,6301;
-              Database=cs4540stu31;
-              User ID=cs4540stu31;
-              Password=Abcd1234";
+        private static readonly string ConnectionString;
+
+        static AppDbContext()
+        {
+            ConnectionString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
