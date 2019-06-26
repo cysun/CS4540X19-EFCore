@@ -1,5 +1,6 @@
-﻿using System.Configuration;
+﻿using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace EFCoreIntro
 {
@@ -9,7 +10,11 @@ namespace EFCoreIntro
 
         static AppDbContext()
         {
-            ConnectionString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+            ConnectionString = config.GetConnectionString("Default");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
