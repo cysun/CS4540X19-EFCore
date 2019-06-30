@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace EFCoreMapping
 {
@@ -35,11 +33,13 @@ namespace EFCoreMapping
         public string Zip { get; set; }
     }
 
+    [Table("Phones")]
     public class Phone
     {
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
 
+        [MaxLength(32)]
         public string Number { get; set; }
     }
 
@@ -50,15 +50,16 @@ namespace EFCoreMapping
         public decimal Balance { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
-        public int OwnerId { get; set; }
+        public int? OwnerId { get; set; }
         public Customer Owner { get; set; }
 
-        public List<AccountCoOwners> CoOwners { get; set; }
+        public List<AccountCoOwner> CoOwners { get; set; }
 
         public bool Deleted { get; set; } = false;
     }
 
-    public class AccountCoOwners
+    [Table("AccountCoOwners")]
+    public class AccountCoOwner
     {
         public int AccountId { get; set; }
         public Account Account { get; set; }
@@ -70,37 +71,5 @@ namespace EFCoreMapping
     public class CDAccount : Account
     {
         public int Term { get; set; }
-    }
-
-    class AppDbContext : DbContext
-    {
-        private static readonly string ConnectionString;
-
-        static AppDbContext()
-        {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-            ConnectionString = config.GetConnectionString("Default");
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(ConnectionString);
-        }
-
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Account> Accounts { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Phone>().HasKey(p => new { p.CustomerId, p.Number });
-            modelBuilder.Entity<Account>().Property(a => a.DateCreated).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            modelBuilder.Entity<Account>().Property(a => a.Deleted).HasDefaultValue(false);
-            modelBuilder.Entity<Account>().HasQueryFilter(a => !a.Deleted);
-            modelBuilder.Entity<AccountCoOwners>().HasKey(a => new { a.AccountId, a.CoOwnerId });
-            modelBuilder.Entity<CDAccount>().HasBaseType<Account>();
-        }
     }
 }
